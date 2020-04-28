@@ -76,6 +76,7 @@
     </section>
 
     <section class="content">
+        @include('layouts.backend.partial.error_message')
         @yield('content')
     </section>
 

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Client;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
@@ -14,7 +15,8 @@ class ClientController extends Controller
      */
     public function index()
     {
-        return view('admin.client.index');
+        $clients = Client::latest()->get();
+        return view('admin.client.index', compact('clients'));
     }
 
     /**
@@ -24,7 +26,7 @@ class ClientController extends Controller
      */
     public function create()
     {
-        //
+        return view('admin.client.create');
     }
 
     /**
@@ -35,7 +37,19 @@ class ClientController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $this->validate($request,  [
+            'client_name' => 'required|unique:clients|max:50',
+        ]);
+
+        $client = new Client();
+
+        $client->client_name = $request->client_name;
+        $client->contact_person = $request->contact_person;
+        $client->contact_no = $request->contact_no;
+        $client->address = $request->address;
+        $client->save();
+
+        return redirect(route('admin.client.index'))->with('successMsg', 'Client Added Successfully!!');
     }
 
     /**
@@ -57,7 +71,8 @@ class ClientController extends Controller
      */
     public function edit($id)
     {
-        //
+        $client = Client::find($id);
+        return view('admin.client.edit', compact('client'));
     }
 
     /**
@@ -69,7 +84,19 @@ class ClientController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $this->validate($request,  [
+            'client_name' => 'required|max:50|unique:clients,client_name,'.$id,
+        ]);
+
+        $client = Client::find($id);
+
+        $client->client_name = $request->client_name;
+        $client->contact_person = $request->contact_person;
+        $client->contact_no = $request->contact_no;
+        $client->address = $request->address;
+        $client->save();
+
+        return redirect(route('admin.client.index'))->with('successMsg', 'Client Updated Successfully!!');
     }
 
     /**
@@ -80,6 +107,7 @@ class ClientController extends Controller
      */
     public function destroy($id)
     {
-        //
+        Client::find($id)->delete();
+        return redirect(route('admin.client.index'))->with('successMsg', 'Client Deleted Successfully');
     }
 }

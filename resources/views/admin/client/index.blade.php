@@ -8,9 +8,10 @@
 <div class="container-fluid">
             <div class="block-header">
                 <h2>
-                    Client
+                    <a href="{{ route('admin.client.create') }}" class="btn btn-primary waves-effect"><i class="material-icons">add</i><span>Add New Client</span></a>
                 </h2>
             </div>
+
             <!-- Exportable Table -->
             <div class="row clearfix">
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
@@ -19,51 +20,41 @@
                             <h2>
                                 EXPORTABLE TABLE
                             </h2>
-                            <ul class="header-dropdown m-r--5">
-                                <li class="dropdown">
-                                    <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                                        <i class="material-icons">more_vert</i>
-                                    </a>
-                                    <ul class="dropdown-menu pull-right">
-                                        <li><a href="javascript:void(0);">Action</a></li>
-                                        <li><a href="javascript:void(0);">Another action</a></li>
-                                        <li><a href="javascript:void(0);">Something else here</a></li>
-                                    </ul>
-                                </li>
-                            </ul>
                         </div>
                         <div class="body">
                             <div class="table-responsive">
                                 <table class="table table-bordered table-striped table-hover dataTable js-exportable">
                                     <thead>
                                         <tr>
-                                            <th>Name</th>
-                                            <th>Position</th>
-                                            <th>Office</th>
-                                            <th>Age</th>
-                                            <th>Start date</th>
-                                            <th>Salary</th>
+                                            <th>Client</th>
+                                            <th>Contact Person</th>
+                                            <th>Contact No</th>
+                                            <th>Action</th>
                                         </tr>
                                     </thead>
                                     <tfoot>
                                         <tr>
-                                            <th>Name</th>
-                                            <th>Position</th>
-                                            <th>Office</th>
-                                            <th>Age</th>
-                                            <th>Start date</th>
-                                            <th>Salary</th>
+                                            <th>Client</th>
+                                            <th>Contact Person</th>
+                                            <th>Contact No</th>
+                                            <th>Action</th>
                                         </tr>
                                     </tfoot>
                                     <tbody>
+                                        @foreach($clients as $client)
                                         <tr>
-                                            <td>Tiger Nixon</td>
-                                            <td>System Architect</td>
-                                            <td>Edinburgh</td>
-                                            <td>61</td>
-                                            <td>2011/04/25</td>
-                                            <td>$320,800</td>
+                                            <td>{{ $client->client_name }}</td>
+                                            <td>{{ $client->contact_person }}</td>
+                                            <td>{{ $client->contact_no }}</td>
+                                            <td><a href="{{ route('admin.client.edit', $client->id) }}" class="btn btn-primary waves-effect"><i class="material-icons">edit</i></a>
+                            <button class="btn btn-danger waves-effect" type="button" onclick="deleteClient({{ $client->id }})"><i class="material-icons">delete</i></button>
+
+                            <form id="delete-form-{{ $client->id }}" action="{{ route('admin.client.destroy', $client->id) }}" method="POST" style="display: none;">
+                                @csrf
+                                @method('DELETE')
+                            </form></td>
                                         </tr>
+                                        @endforeach
                                 </table>
                             </div>
                         </div>
@@ -89,4 +80,49 @@
 
 	<!-- Custom Js -->
     <script src="{{ asset('assets/backend/js/pages/tables/jquery-datatable.js') }}"></script>
+
+
+        <!-- SweetAlert Js -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+
+    <script type="text/javascript">
+        function deleteClient(id) {
+            const swalWithBootstrapButtons = Swal.mixin({
+  customClass: {
+    confirmButton: 'btn btn-success',
+    cancelButton: 'btn btn-danger'
+  },
+  buttonsStyling: false
+})
+
+swalWithBootstrapButtons.fire({
+  title: 'Are you sure?',
+  text: "You won't be able to revert this!",
+  icon: 'warning',
+  showCancelButton: true,
+  confirmButtonText: 'Yes, delete it!',
+  cancelButtonText: 'No, cancel!',
+  reverseButtons: true
+}).then((result) => {
+  if (result.value) {
+
+    //here files get deleted
+    event.preventDefault();
+    document.getElementById('delete-form-'+id).submit();
+
+  } else if (
+    /* Read more about handling dismissals below */
+    result.dismiss === Swal.DismissReason.cancel
+  ) {
+    swalWithBootstrapButtons.fire(
+      'Cancelled',
+      'Your imaginary file is safe :)',
+      'error'
+    )
+  }
+})
+
+ }
+
+    </script>
 @endpush

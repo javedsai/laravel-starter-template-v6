@@ -42,7 +42,7 @@
                             <span>Dashboard</span>
                         </a>
                     </li>
-                    <li class="{{ (Request::is('admin/client')) ? 'active' : '' }}">
+                    <li class="{{ (Request::is('admin/client*')) ? 'active' : '' }}">
                         <a href="{{ route('admin.client.index') }}">
                             <i class="material-icons">dashboard</i>
                             <span>Client</span>
