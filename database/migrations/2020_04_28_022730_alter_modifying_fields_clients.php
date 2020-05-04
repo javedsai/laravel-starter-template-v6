@@ -17,7 +17,6 @@ class AlterModifyingFieldsClients extends Migration
             $table->string('client_name', 50)->unique()->change();
             $table->string('contact_no', 25)->nullable()->change();
             $table->string('contact_person', 50)->nullable()->change();
-            $table->text('address')->nullable();
         });
     }
 
