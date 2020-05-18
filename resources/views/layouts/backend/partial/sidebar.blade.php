@@ -44,8 +44,15 @@
                     </li>
                     <li class="{{ (Request::is('admin/client*')) ? 'active' : '' }}">
                         <a href="{{ route('admin.client.index') }}">
-                            <i class="material-icons">dashboard</i>
+                            <i class="material-icons">people</i>
                             <span>Client</span>
+                        </a>
+                    </li>
+                    <li class="{{ (Request::is('admin/pages*')) ? 'active' : '' }}">
+                        <a href="{{ route('admin.pages.index') }}">
+                            <i class="material-icons">file_copy</i>
+                            {{-- <i class="material-icons">insert_drive_file</i> --}}
+                            <span>CMS</span>
                         </a>
                     </li>
                     @endif

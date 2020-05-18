@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Pages;
 use Illuminate\Http\Request;
 
 class PagesController extends Controller
@@ -14,7 +15,9 @@ class PagesController extends Controller
      */
     public function index()
     {
-        //
+        $pages = Pages::latest()->get();
+        return view('admin.pages.index', compact('pages'));
+
     }
 
     /**
@@ -24,7 +27,7 @@ class PagesController extends Controller
      */
     public function create()
     {
-        //
+        return view('admin.pages.create');
     }
 
     /**
@@ -35,7 +38,34 @@ class PagesController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        //return $request->all();
+
+        $this->validate($request, [
+            'page_headline' => 'required|unique:pages|max:255', 
+            'page_content' =>  'required'
+        ]);
+
+        $pages = new Pages();
+
+        $pages->page_headline = $request->page_headline;
+        $pages->slug = str_slug($request->page_headline);
+        $pages->page_title = $request->page_title;
+        $pages->keywords = $request->keywords;
+        $pages->meta_description = $request->meta_description;
+        $pages->page_content = $request->page_content;
+        if ($request->image == null)
+        {
+            unset($pages->image);
+        }
+        else
+        {
+            //Image Upload Code
+        }
+        $pages->display_image_on_left = ($request->display_image_on_left == true) ? '1' : '0';
+        $pages->save();
+
+        return redirect(route('admin.pages.index'))->with('successMsg', 'Page Created Successfully!!');
+
     }
 
     /**
