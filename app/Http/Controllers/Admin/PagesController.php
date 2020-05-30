@@ -85,8 +85,7 @@ class PagesController extends Controller
             }
             else
             {
-                //print this error if required
-                //return redirect(route('admin.pages.index'))->with('unsuccessMsg', 'Error While Uploading File!!');
+                return redirect(route('admin.pages.index'))->with('unsuccessMsg', 'Error While Uploading File!!');
             }
         }
         else
@@ -121,7 +120,7 @@ class PagesController extends Controller
      */
     public function edit($id)
     {
-        $page = Page::find($id);
+        $page = Pages::find($id);
         return view('admin.pages.edit', compact('page'));
     }
 
@@ -134,7 +133,76 @@ class PagesController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $this->validate($request, [
+            'page_headline' => 'required|max:255|unique:pages,page_headline,'.$id,
+            'page_content' =>  'required',
+            'image' => 'image|nullable|mimes:jpeg,jpg,png|max:1999'
+        ]);
+
+        $pages = Pages::find($id);
+
+        $pages->page_headline = $request->page_headline;
+        //Slug Update is disabled
+        //$pages->slug = str_slug($request->page_headline);
+        $pages->page_title = $request->page_title;
+        $pages->keywords = $request->keywords;
+        $pages->meta_description = $request->meta_description;
+        $pages->page_content = $request->page_content;
+
+        /* Image Upload Handling */       
+        if ($request->hasFile('image')) 
+        {
+            if ($request->file('image')->isValid()) 
+            {
+                //Make Unique Name for Image
+                $image = $request->file('image');
+                $ext = $request->file('image')->extension();
+                $currentDate = Carbon::now()->toDateString();
+                $imageName = $pages->slug."-".$currentDate."-".uniqid().".".$ext;
+
+                    //Check Category Directory Exist
+                    if(!Storage::disk('public')->exists('pages'))
+                    {
+                        Storage::disk('public')->makeDirectory('pages');
+                    }
+                    else
+                    {
+                        //Directory Exist
+                        //check Previous Image, if exist then, unlink it
+                        if ($pages->image != "" && $pages->image != "default.png")
+                        {
+                            //unlink previous image
+                            Storage::disk('public')->delete('pages/'.$pages->image);
+                        }
+                    }
+
+                    //Resize Image for Category and Upload
+                    //350px X 220px
+                    $img = Image::make($image)->resize(350,220)->stream();
+                    Storage::disk('public')->put('pages/'.$imageName, $img);
+
+                    //Saving Image Name in DB
+                    $pages->image = $imageName;
+            }
+            else
+            {
+                return redirect(route('admin.pages.index'))->with('unsuccessMsg', 'Error While Uploading File!!');
+            }
+        }
+        else
+        {
+            //unsetting image name since, automatically it will store default name from migration
+            unset($pages->image);
+        }        
+        /* EO Image Upload Handling */
+        
+        $pages->display_image_on_left = ($request->display_image_on_left == true) ? '1' : '0';
+        $pages->save();
+
+        return redirect(route('admin.pages.index'))->with('successMsg', 'Page Updated Successfully!!');
+
+
+
     }
 
     /**
@@ -145,6 +213,16 @@ class PagesController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $pages = Pages::find($id);
+
+        //check Previous Image, if exist then, unlink it
+        if ($pages->image != "" && $pages->image != "default.png")
+        {
+            //unlink previous image
+            Storage::disk('public')->delete('pages/'.$pages->image);
+        }
+        
+        $pages->delete();
+        return redirect(route('admin.pages.index'))->with('successMsg', 'Page Deleted Successfully!!');
     }
 }

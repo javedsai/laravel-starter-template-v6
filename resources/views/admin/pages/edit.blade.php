@@ -16,48 +16,59 @@
                             </h2>
                         </div>
                         <div class="body">                            
-                            <form method="POST" action="{{ route('admin.pages.store') }}" enctype="multipart/form-data" >
-                             @csrf
+                            <form method="POST" action="{{ route('admin.pages.update', $page->id) }}" enctype="multipart/form-data" >
+                           	@csrf
+							@method('PUT')
 
                              <label class="form-label">Page Headline<span class="font-bold col-pink"> *</span></label>
                              <div class="form-group">
                              	<div class="form-line">
-                             		<input type="text" id="page_headline" name="page_headline" value="{{ old('page_headline') }}" placeholder="Enter Page Headline (Page URL / Slug)" autocomplete="off" class="form-control">
+                             		<input type="text" id="page_headline" name="page_headline" value="{{ old('page_headline', $page->page_headline) }}" placeholder="Enter Page Headline (Page URL / Slug)" autocomplete="off" class="form-control">
                              	</div>
                              </div>
 
                              <label class="form-label">Page Title</label>
                              <div class="form-group">
                                 <div class="form-line">
-                                    <input type="text" id="page_title" name="page_title" value="{{ old('page_title') }}" placeholder="Enter Page Title (Page Title)" autocomplete="off" class="form-control">
+                                    <input type="text" id="page_title" name="page_title" value="{{ old('page_title', $page->page_title) }}" placeholder="Enter Page Title (Page Title)" autocomplete="off" class="form-control">
                                 </div>
                              </div>
 
                              <label class="form-label">Keywords</label>
                              <div class="form-group">
                              	<div class="form-line">
-                             		<input type="text" id="keywords" name="keywords" value="{{ old('keywords') }}" placeholder="Enter Keywords for SEO" autocomplete="off" class="form-control">
+                             		<input type="text" id="keywords" name="keywords" value="{{ old('keywords', $page->keywords) }}" placeholder="Enter Keywords for SEO" autocomplete="off" class="form-control">
                              	</div>
                              </div>
 
                              <label class="form-label">Meta Description</label>
                              <div class="form-group">
                              	<div class="form-line">
-                             		<input type="text" id="meta_description" name="meta_description" value="{{ old('meta_description') }}" placeholder="Enter Meta Description for SEO" autocomplete="off" class="form-control">
+                             		<input type="text" id="meta_description" name="meta_description" value="{{ old('meta_description', $page->meta_description) }}" placeholder="Enter Meta Description for SEO" autocomplete="off" class="form-control">
                              	</div>
                              </div>
 
                              <label class="form-label">Page Content <span class="font-bold col-pink"> *</span></label>
                              <div class="form-group">
                              	<div class="form-line">
-                                    <textarea name="page_content" id="tinymce" rows="1">{{ old('page_content') }}</textarea>
+                                    <textarea name="page_content" id="tinymce" rows="1">{{ old('page_content', $page->page_content) }}</textarea>
                              	</div>
                              </div>
 
-                             <div class="clearfix m-t-15">&nbsp;</div>
-                            
+                            @if($page->image != "")
+	                            <div class="row">
+	                              <div class="col-xs-6 col-md-3">
+                                <label class="form-label">Uploaded Image</label>	                              	
+	                                <a href="#" class="thumbnail">
+	                                  <img src="{{ asset('storage/pages/'.$page->image) }}" alt="artwork">
+	                                </a>
+	                              </div>
+	                            </div>
+                            @endif
+
                             <div class="col-lg-8 col-md-12 col-sm-12 col-xs-12">
                                 <label class="form-label">Upload Image</label>
+
                                  <div class="form-group">
                                         <input type="file" name="image" class="form-control">
                                         <p class="help-block">( width: 350px, height:220px )</p>
@@ -67,7 +78,7 @@
                             <div class="col-lg-4 col-md-12 col-sm-12 col-xs-12">
                                 <div class="switch panel-switch-btn">
                                     <label class="m-r-10 form-label" style="font-size: 14px; font-weight: 700;">Display Image on Left</label>
-                                    <label>NO<input type="checkbox" id="display_image_on_left" name="display_image_on_left" value="true" checked><span class="lever switch-col-teal"></span>YES</label>
+                                    <label>NO<input type="checkbox" id="display_image_on_left" name="display_image_on_left" value="true" {{ ($page->display_image_on_left == 1) ? 'checked' : '' }}><span class="lever switch-col-teal"></span>YES</label>
                                 </div>
                             </div>
 
